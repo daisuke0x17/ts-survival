@@ -1,17 +1,25 @@
+# サバイバルTypeScript <!-- omit in toc -->
 - [TS の特徴](#ts-の特徴)
 - [TS の誕生](#ts-の誕生)
-- [パッケージマネージャー](#パッケージマネージャー)
-- [モジュールバンドラー](#モジュールバンドラー)
-- [トランスパイラー](#トランスパイラー)
-- [Gitフック](#gitフック)
-- [古いJS環境を対象とした開発シーンでも最新の構文が使える](#古いjs環境を対象とした開発シーンでも最新の構文が使える)
+- [TypeScript とエコシステム](#typescript-とエコシステム)
+  - [パッケージマネージャー](#パッケージマネージャー)
+  - [モジュールバンドラー](#モジュールバンドラー)
+  - [トランスパイラー](#トランスパイラー)
+  - [Git フック](#git-フック)
+- [なぜ TypeScript を使うべきか](#なぜ-typescript-を使うべきか)
+  - [古いJS環境を対象とした開発シーンでも最新の構文が使える](#古いjs環境を対象とした開発シーンでも最新の構文が使える)
 - [静的型付け](#静的型付け)
-- [JavaScriptとECMAScriptの関係](#javascriptとecmascriptの関係)
-- [ECMAScript とブラウザの仕様](#ecmascript-とブラウザの仕様)
-- [ECMAScript とブラウザの関係性](#ecmascript-とブラウザの関係性)
-- [フロントエンドとバックエンドの両方でTypeScriptを採用するメリット](#フロントエンドとバックエンドの両方でtypescriptを採用するメリット)
-- [デスクトップアプリケーション](#デスクトップアプリケーション)
-- [WebAssembly](#webassembly)
+- [ECMAScript](#ecmascript)
+  - [JavaScriptとECMAScriptの関係](#javascriptとecmascriptの関係)
+  - [ECMAScript とブラウザの仕様](#ecmascript-とブラウザの仕様)
+  - [ECMAScript とブラウザの関係性](#ecmascript-とブラウザの関係性)
+- [TypeScript の射程](#typescript-の射程)
+  - [フロントエンドとバックエンドの両方でTypeScriptを採用するメリット](#フロントエンドとバックエンドの両方でtypescriptを採用するメリット)
+  - [デスクトップアプリケーション](#デスクトップアプリケーション)
+  - [WebAssembly](#webassembly)
+- [TypeScript は何ではないか？](#typescript-は何ではないか)
+  - [実行時の高速化・省メモリ化に影響しない](#実行時の高速化省メモリ化に影響しない)
+  - [JavaScriptの仕様バグは修正しない](#javascriptの仕様バグは修正しない)
 
 ## TS の特徴
 - TypeScriptで書かれたコードは純粋なJavaScriptにコンパイルされる
@@ -22,23 +30,24 @@
 - JavaScriptの文法を拡張するに留める「JavaScriptのスーパーセット言語」としての戦略を採用
 - TypeScriptを導入したとしても、既存のJavaScript資産はそのまま活用
 
-## パッケージマネージャー
+## TypeScript とエコシステム
+### パッケージマネージャー
 - npmやYarnでインストールされるライブラリは、npmjs.comにホスティング
 - npmjs.comは中央集権型のレジストリ
 
-## モジュールバンドラー
+### モジュールバンドラー
 - 複数のJavaScriptファイルをひとつのファイルに結合するためのツール
 - 複数のJavaScriptファイルに依存関係がある場合、それをそのままブラウザに読み込ませるには、慎重に読み込み順を指定しないと、アプリケーションが破壊数
 - 多くのファイルからなるアプリケーションをモジュールバンドラーで1ファイルに
 
-## トランスパイラー
+### トランスパイラー
 - あるプログラミング言語でかかれたコードを、別の言語に変換するツール
 - JavaScriptでは、新しいバージョンのJavaScriptから古いバージョンのJavaScriptに変換するトランスパイラーがある
   - Babelやswc
 - TypeScriptのtsc(TypeScript compiler)もトランスパイラー
   - tscはTypeScriptからJavaScriptへの変換
 
-## Gitフック
+### Git フック
 - Gitにコミットするタイミングや、プッシュするタイミングに、何らかのプログラムを実行する機能
 - JavaScriptの開発現場では、Gitコミット時に
   - TypeScriptのコンパイルで型チェック
@@ -48,7 +57,8 @@
   - husky
   - lint-staged
 
-## 古いJS環境を対象とした開発シーンでも最新の構文が使える
+## なぜ TypeScript を使うべきか
+### 古いJS環境を対象とした開発シーンでも最新の構文が使える
 - TypeScriptは、そのような古いJS環境をターゲットとしたプロジェクトにも導入可能
 - TypeScriptはコンパイル時にどのバージョンのJavaScriptにコンパイルするかを選べる
 - TypeScriptはECMAScriptへの準拠を原則としており、ECMAScriptで採択された新機能はいち早く取り入れらる
@@ -65,7 +75,8 @@
   - 型にまつわる問題はプログラムを実行しなくても発見
 - 型注釈: **あなた専属のコードレビュアであるコンパイラを育てるための投資**
 
-## JavaScriptとECMAScriptの関係
+## ECMAScript
+### JavaScriptとECMAScriptの関係
 - ECMAScriptはJavaScriptの仕様を定義したもの
   - 仕様＝決まりごと
   - ブラウザなどがJavaScriptを読み込んだときに、どのような文法を解釈しなければならないか、処理がどのように動くべきかといったことを決めたもの
@@ -78,7 +89,7 @@
 - ECMAScriptは仕様なので、ECMAScriptというプログラムがあるわけではない
   - ダウンロードしたりインストールするものではないということ
 
-## ECMAScript とブラウザの仕様
+### ECMAScript とブラウザの仕様
 - ECMAScriptが決めるクライアントサイドJavaScriptの仕様は部分的
   - ECMAScriptが定める範囲は、言語の文法、構文の解釈方法、コアのAPIなど言語の中核部分
 - JavaScriptのうちブラウザ仕様に関する部分は、HTML Living Standardが決める
@@ -87,7 +98,7 @@
     - importやexportの構文や、モジュール内部の仕様など
   - 一方、モジュールの具体的なロード方法はHTML Living Standardが定める
 
-## ECMAScript とブラウザの関係性
+### ECMAScript とブラウザの関係性
 - ブラウザの内部を分解すると、レンダリングエンジンやJavaScriptエンジンと呼ばれる部品の単位がある
 - JavaScriptエンジンは、ECMAScriptを実装したモジュール
   - JavaScriptエンジンの主要なものは V8、SpiderMonkey、JavaScriptCoreがある
@@ -103,18 +114,46 @@
 - iOSのWebKit独占の例のように、同じブランド名のブラウザでもエンジンが異なる場合がある
   - この場合、テストで網羅するブラウザを増やすといった意思決定が行えるようになる
 
-## フロントエンドとバックエンドの両方でTypeScriptを採用するメリット
+## TypeScript の射程
+### フロントエンドとバックエンドの両方でTypeScriptを採用するメリット
 - モジュールを共有できる
   - 両方でTypeScriptを採用すると、一方で作ったTypeScriptのモジュールをもう一方で再利用可能
 
-## デスクトップアプリケーション
+### デスクトップアプリケーション
 - WindowsやmacOS、Linux向けにデスクトップアプリケーションを作る場合もTypeScriptが使える
 - デスクトップアプリケーションをJavaScript、HTML、CSSの技術スタックで開発できる **Electron** を用いる
 - TypeScript製の著名なアプリとしては、SlackやMicrosoft社のVS Code など
 
-## WebAssembly
+### WebAssembly
 - WebAssembly(WASM)はブラウザで動くアセンブリー言語
   - WASMはJavaScriptよりも高速な処理が必要とされるところで用いられる
 - WASMのプログラムはC言語やC++、Rustといったシステム言語で開発されることが多い
 - TypeScriptでWASMを開発できるようにする試みも出てきている
   - その筆頭が AssemblyScript
+
+## TypeScript は何ではないか？
+### 実行時の高速化・省メモリ化に影響しない
+- TypeScriptの実行時パフォーマンスはJavaScriptと同じ
+  - TypeScriptのランタイムはない
+    - TypeScriptを直接実行するエンジンがない
+    - TypeScriptで書いたコードを実行するには、一度JavaScriptコードに変換する必要がある
+    - TypeScriptのパフォーマンスは、**コンパイル後のJavaScriptがどうなっているかで決まる**
+  - TypeScriptコンパイラは最適化しない
+    - 一般的に「コンパイラ」には、次の3つの仕事があると言われる
+      1. ソースコードを解析し、問題点をチェックする
+      2. ソースコードを別の言語に変換する
+      3. 最適化する
+         - 実行速度が速くなるようにする
+         - 少ないメモリで動くようにする
+         - 少ない電力で済むようにする
+         - 実行ファイルのサイズを小さくする
+    - このうち、TypeScriptコンパイラがするのは上の2つ
+    - 3つ目の最適化はしない
+  - TypeScriptコンパイラがするのは**基本的に型を外すだけ**
+
+### JavaScriptの仕様バグは修正しない
+- JavaScriptには元々バグだったものが仕様に変わった例がある
+  - たとえば、値の型を調べるtypeof演算子は、nullを渡すと"object"が返る
+  - これはバグと考えられていたが、後方互換性のため修正されることなく仕様になった
+- TypeScriptでも、こうした仕様バグは修正されていない
+  - TypeScriptはあくまでJavaScriptに型をプラスした言語というスタンスだから
