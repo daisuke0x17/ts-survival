@@ -26,6 +26,12 @@
     - [Node.js とは](#nodejs-とは)
   - [簡単な関数を作ってみよう](#簡単な関数を作ってみよう)
     - [コンパイラを働かせる](#コンパイラを働かせる)
+  - [Reactでいいねボタンを作ろう](#reactでいいねボタンを作ろう)
+    - [Reactの3大特徴](#reactの3大特徴)
+    - [tsxって何？TypeScriptの中にHTMLが書ける？](#tsxって何typescriptの中にhtmlが書ける)
+    - [関数コンポーネント](#関数コンポーネント)
+    - [JSXのセルフクロージング要素](#jsxのセルフクロージング要素)
+    - [class属性は使わない？](#class属性は使わない)
 # 【１章】TypeScript のあらまし
 ## TS の特徴
 - TypeScriptで書かれたコードは純粋なJavaScriptにコンパイルされる
@@ -178,7 +184,93 @@
 ## 簡単な関数を作ってみよう
 ### コンパイラを働かせる
 - コンパイラに与えるヒントのことを「型注釈(type annotation)」と言う
+```
+function increment(num: number) {
+//                 ^^^^^^^^型注釈
+  return num + 1;
+}
+```
 - TypeScriptコンパイラのコマンドは`tsc`
 ```
 tsc increment.ts
 ```
+
+## Reactでいいねボタンを作ろう
+### Reactの3大特徴
+- 特徴その1: 仮想DOM
+  - そもそもDOM(document object model)とは、HTMLをJavaScriptから参照・操作する仕組み
+    - HTMLを文字列操作ではなく、オブジェクトとして処理できる
+    - DOMはHTMLを操作するためのAPIのようなもの
+  - 仮想DOMはリアルDOMのプロキシのようなもの
+    - リアルDOMと比べて、状態管理上のバグを起こしにくい設計になっている
+    - パフォーマンス面では描画処理の最適化もする
+    - 仮想DOMに起こった変更はリアルDOMに伝わり画面に現れる
+- 特徴その2: 宣言的UI
+  - そもそも**命令的なコード**とは
+    - 何かを表示したい場合でもどのように表示するかのhowの部分を細かく書く必要がある
+    - 命令的なコード例
+```
+    const list = document.createElement("ul");
+const apple = document.createElement("li");
+apple.innerText = "リンゴ";
+list.append(apple);
+const orange = document.createElement("li");
+orange.innerText = "オレンジ";
+list.append(orange);
+const grape = document.createElement("li");
+grape.innerText = "ぶどう";
+list.append(grape);
+```
+  - 宣言的なコード例
+    - どのように表示するかの部分はなく、「このような表示になってほしい」という目標だけを書く
+    - 実装の細部やアルゴリズムを気にしなくてよい
+    - 「どんなUIにしたいか」の一点に集中してコードを書く
+```
+function Fruits() {
+  return (
+    <ul>
+      <li>リンゴ</li>
+      <li>オレンジ</li>
+      <li>ぶどう</li>
+    </ul>
+  );
+}
+```
+- 特徴その3: コンポーネントベース
+  - コンポーネントというのはUIの部品のこと
+    - 小さいもので言えばボタンや入力欄、より大きめの部品だとフォーム
+    - さらに大きい部品ではページもコンポーネント
+  - Reactには、小さいコンポーネントを組み合わせ、大きなアプリケーションを成すという思想がある
+  - オープンソースのコンポーネントも数多く公開
+    - カレンダーUIのような自力で作ると面倒なコンポーネントも種類豊富に公開されている
+
+### tsxって何？TypeScriptの中にHTMLが書ける？
+- HTMLに見える部分はJSXと言われるもの
+  - JSXはJavaScriptを拡張した言語で、JavaScriptの中にXMLを直接書けるようにしたもの
+- TypeScriptとJSXは本来無関係の言語ですが、開発者の利便性のために、TypeScriptでもJSXが書けるようになっている
+- JSXを書いたJavaScriptファイルは拡張子を`.jsx`にする
+  - 同様にTypeScriptファイルは`.tsx`にする
+
+### 関数コンポーネント
+- ReactのJSXでは、HTMLタグのdivやheaderが使えるだけでなく、自分で定義した関数もタグとして使うことができる
+  - JSXを戻り値として返す関数だけがタグとして使える
+- JSXを戻り値にする関数をReact用語で「関数コンポーネント」と言う
+
+### JSXのセルフクロージング要素
+- JSXはJavaScriptの拡張構文であり、厳密にはHTMLと異なるもの
+- そのため、JSXにはHTMLとは異なる書き方や制約がある
+- `<LikeButton />`のようにスラッシュをタグに含める書き方も、JSXならではの書き方
+  - これはセルフクロージング要素(self-closing element)と呼ばれる
+    - 自己閉じ要素、自己完結型要素と呼ばれることもある
+  - `<LikeButton></LikeButton>`のように子要素などを持たない場合に、`<LikeButton />`のように末尾に`/`をつけることで、短く表現できる
+
+### class属性は使わない？
+- HTMLではCSSクラスを指定するのに`class`属性を用いる
+- ここでは`className`属性にしている
+  - これは初期のReactがDOMプロパティに直接値をセットしていた名残り
+- DOMでは、HTMLの`class`属性が`className`プロパティになる
+  - 現在は、ReactがDOMプロパティを直接セットすることがなくなったので、`className`属性に縛られる技術的理由はない
+  - React開発陣は`class`属性への乗り換えは慎重
+  - これまで作られたコンポーネントが動かなくなるかも知れないから
+  - また、両方サポートする気もない
+    - `class`と`className`のどちらもOKとなると混乱を招くから

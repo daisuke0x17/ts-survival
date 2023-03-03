@@ -1,4 +1,4 @@
-function increment(num:number) {
+export function increment(num:number) {
     return num + 1;
 }
 
