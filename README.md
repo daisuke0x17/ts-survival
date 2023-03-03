@@ -1,26 +1,30 @@
 # サバイバルTypeScript <!-- omit in toc -->
-- [TS の特徴](#ts-の特徴)
-- [TS の誕生](#ts-の誕生)
-- [TypeScript とエコシステム](#typescript-とエコシステム)
-  - [パッケージマネージャー](#パッケージマネージャー)
-  - [モジュールバンドラー](#モジュールバンドラー)
-  - [トランスパイラー](#トランスパイラー)
-  - [Git フック](#git-フック)
-- [なぜ TypeScript を使うべきか](#なぜ-typescript-を使うべきか)
-  - [古いJS環境を対象とした開発シーンでも最新の構文が使える](#古いjs環境を対象とした開発シーンでも最新の構文が使える)
-- [静的型付け](#静的型付け)
-- [ECMAScript](#ecmascript)
-  - [JavaScriptとECMAScriptの関係](#javascriptとecmascriptの関係)
-  - [ECMAScript とブラウザの仕様](#ecmascript-とブラウザの仕様)
-  - [ECMAScript とブラウザの関係性](#ecmascript-とブラウザの関係性)
-- [TypeScript の射程](#typescript-の射程)
-  - [フロントエンドとバックエンドの両方でTypeScriptを採用するメリット](#フロントエンドとバックエンドの両方でtypescriptを採用するメリット)
-  - [デスクトップアプリケーション](#デスクトップアプリケーション)
-  - [WebAssembly](#webassembly)
-- [TypeScript は何ではないか？](#typescript-は何ではないか)
-  - [実行時の高速化・省メモリ化に影響しない](#実行時の高速化省メモリ化に影響しない)
-  - [JavaScriptの仕様バグは修正しない](#javascriptの仕様バグは修正しない)
-
+- [TypeScript のあらまし](#typescript-のあらまし)
+  - [TS の特徴](#ts-の特徴)
+  - [TS の誕生](#ts-の誕生)
+  - [TypeScript とエコシステム](#typescript-とエコシステム)
+    - [パッケージマネージャー](#パッケージマネージャー)
+    - [モジュールバンドラー](#モジュールバンドラー)
+    - [トランスパイラー](#トランスパイラー)
+    - [Git フック](#git-フック)
+  - [なぜ TypeScript を使うべきか](#なぜ-typescript-を使うべきか)
+    - [古いJS環境を対象とした開発シーンでも最新の構文が使える](#古いjs環境を対象とした開発シーンでも最新の構文が使える)
+  - [静的型付け](#静的型付け)
+  - [ECMAScript](#ecmascript)
+    - [JavaScriptとECMAScriptの関係](#javascriptとecmascriptの関係)
+    - [ECMAScript とブラウザの仕様](#ecmascript-とブラウザの仕様)
+    - [ECMAScript とブラウザの関係性](#ecmascript-とブラウザの関係性)
+  - [TypeScript の射程](#typescript-の射程)
+    - [フロントエンドとバックエンドの両方でTypeScriptを採用するメリット](#フロントエンドとバックエンドの両方でtypescriptを採用するメリット)
+    - [デスクトップアプリケーション](#デスクトップアプリケーション)
+    - [WebAssembly](#webassembly)
+  - [TypeScript は何ではないか？](#typescript-は何ではないか)
+    - [実行時の高速化・省メモリ化に影響しない](#実行時の高速化省メモリ化に影響しない)
+    - [JavaScriptの仕様バグは修正しない](#javascriptの仕様バグは修正しない)
+- [作って学ぶTypeScript](#作って学ぶtypescript)
+  - [開発環境の準備](#開発環境の準備)
+    - [Node.js とは](#nodejs-とは)
+# TypeScript のあらまし
 ## TS の特徴
 - TypeScriptで書かれたコードは純粋なJavaScriptにコンパイルされる
 - 型推論がある
@@ -157,3 +161,15 @@
   - これはバグと考えられていたが、後方互換性のため修正されることなく仕様になった
 - TypeScriptでも、こうした仕様バグは修正されていない
   - TypeScriptはあくまでJavaScriptに型をプラスした言語というスタンスだから
+
+# 作って学ぶTypeScript
+## 開発環境の準備
+### Node.js とは
+- JavaScriptをサーバーサイドで動かすことを目的に開発されたソフトウェア
+  - Node.jsはGoogle ChromeのJavaScriptエンジンと同じ「V8」でJavaScriptを実行
+  - 組み込みのAPIは異なる
+- ブラウザはJavaScriptからHTMLを操作する必要があるのでDOM APIがある
+- Node.jsには、サーバーサイドのさまざまなリソースを制御する必要がある
+  - ファイルシステムにアクセスするAPIやHTTPサーバーを建てるためのAPI、プロセスを起動したり終了したりするAPIなどがある
+- TypeScriptでの開発も、TypeScriptコンパイラ(tsc)を動かすのにNode.jsが必要
+
