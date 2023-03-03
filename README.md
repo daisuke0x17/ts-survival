@@ -1,5 +1,5 @@
 # サバイバルTypeScript <!-- omit in toc -->
-- [TypeScript のあらまし](#typescript-のあらまし)
+- [【１章】TypeScript のあらまし](#１章typescript-のあらまし)
   - [TS の特徴](#ts-の特徴)
   - [TS の誕生](#ts-の誕生)
   - [TypeScript とエコシステム](#typescript-とエコシステム)
@@ -21,10 +21,12 @@
   - [TypeScript は何ではないか？](#typescript-は何ではないか)
     - [実行時の高速化・省メモリ化に影響しない](#実行時の高速化省メモリ化に影響しない)
     - [JavaScriptの仕様バグは修正しない](#javascriptの仕様バグは修正しない)
-- [作って学ぶTypeScript](#作って学ぶtypescript)
+- [【2章】作って学ぶTypeScript](#2章作って学ぶtypescript)
   - [開発環境の準備](#開発環境の準備)
     - [Node.js とは](#nodejs-とは)
-# TypeScript のあらまし
+  - [簡単な関数を作ってみよう](#簡単な関数を作ってみよう)
+    - [コンパイラを働かせる](#コンパイラを働かせる)
+# 【１章】TypeScript のあらまし
 ## TS の特徴
 - TypeScriptで書かれたコードは純粋なJavaScriptにコンパイルされる
 - 型推論がある
@@ -162,7 +164,7 @@
 - TypeScriptでも、こうした仕様バグは修正されていない
   - TypeScriptはあくまでJavaScriptに型をプラスした言語というスタンスだから
 
-# 作って学ぶTypeScript
+# 【2章】作って学ぶTypeScript
 ## 開発環境の準備
 ### Node.js とは
 - JavaScriptをサーバーサイドで動かすことを目的に開発されたソフトウェア
@@ -173,3 +175,10 @@
   - ファイルシステムにアクセスするAPIやHTTPサーバーを建てるためのAPI、プロセスを起動したり終了したりするAPIなどがある
 - TypeScriptでの開発も、TypeScriptコンパイラ(tsc)を動かすのにNode.jsが必要
 
+## 簡単な関数を作ってみよう
+### コンパイラを働かせる
+- コンパイラに与えるヒントのことを「型注釈(type annotation)」と言う
+- TypeScriptコンパイラのコマンドは`tsc`
+```
+tsc increment.ts
+```
