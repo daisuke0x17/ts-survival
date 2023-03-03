@@ -9,6 +9,9 @@
 - [JavaScriptとECMAScriptの関係](#javascriptとecmascriptの関係)
 - [ECMAScript とブラウザの仕様](#ecmascript-とブラウザの仕様)
 - [ECMAScript とブラウザの関係性](#ecmascript-とブラウザの関係性)
+- [フロントエンドとバックエンドの両方でTypeScriptを採用するメリット](#フロントエンドとバックエンドの両方でtypescriptを採用するメリット)
+- [デスクトップアプリケーション](#デスクトップアプリケーション)
+- [WebAssembly](#webassembly)
 
 ## TS の特徴
 - TypeScriptで書かれたコードは純粋なJavaScriptにコンパイルされる
@@ -99,3 +102,19 @@
 - プログラムをテストするときも、ブラウザとエンジンの組み合わせが理解できていると、同じエンジンを採用しているブラウザはテストを省略できる場合もある
 - iOSのWebKit独占の例のように、同じブランド名のブラウザでもエンジンが異なる場合がある
   - この場合、テストで網羅するブラウザを増やすといった意思決定が行えるようになる
+
+## フロントエンドとバックエンドの両方でTypeScriptを採用するメリット
+- モジュールを共有できる
+  - 両方でTypeScriptを採用すると、一方で作ったTypeScriptのモジュールをもう一方で再利用可能
+
+## デスクトップアプリケーション
+- WindowsやmacOS、Linux向けにデスクトップアプリケーションを作る場合もTypeScriptが使える
+- デスクトップアプリケーションをJavaScript、HTML、CSSの技術スタックで開発できる **Electron** を用いる
+- TypeScript製の著名なアプリとしては、SlackやMicrosoft社のVS Code など
+
+## WebAssembly
+- WebAssembly(WASM)はブラウザで動くアセンブリー言語
+  - WASMはJavaScriptよりも高速な処理が必要とされるところで用いられる
+- WASMのプログラムはC言語やC++、Rustといったシステム言語で開発されることが多い
+- TypeScriptでWASMを開発できるようにする試みも出てきている
+  - その筆頭が AssemblyScript
