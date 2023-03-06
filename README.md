@@ -32,6 +32,19 @@
     - [関数コンポーネント](#関数コンポーネント)
     - [JSXのセルフクロージング要素](#jsxのセルフクロージング要素)
     - [class属性は使わない？](#class属性は使わない)
+  - [Next.jsで猫画像ジェネレーターを作ろう](#nextjsで猫画像ジェネレーターを作ろう)
+    - [Next.jsの概要](#nextjsの概要)
+    - [ページコンポーネントディレクトリを作る](#ページコンポーネントディレクトリを作る)
+    - [Next.jsではアロー関数を使うべきですか？](#nextjsではアロー関数を使うべきですか)
+    - [画像を取得する関数を実装する](#画像を取得する関数を実装する)
+    - [useEffectには非同期関数は渡せない](#useeffectには非同期関数は渡せない)
+    - [JSXには文が書けない](#jsxには文が書けない)
+    - [Next.jsのSSRとデータフェッチAPI](#nextjsのssrとデータフェッチapi)
+    - [getServerSideProps](#getserversideprops)
+    - [getStaticProps](#getstaticprops)
+    - [getInitialProps](#getinitialprops)
+    - [ビジュアルを作り込む](#ビジュアルを作り込む)
+    - [プロダクションビルドと実行](#プロダクションビルドと実行)
 # 【１章】TypeScript のあらまし
 ## TS の特徴
 - TypeScriptで書かれたコードは純粋なJavaScriptにコンパイルされる
@@ -274,3 +287,136 @@ function Fruits() {
   - これまで作られたコンポーネントが動かなくなるかも知れないから
   - また、両方サポートする気もない
     - `class`と`className`のどちらもOKとなると混乱を招くから
+
+## Next.jsで猫画像ジェネレーターを作ろう
+### Next.jsの概要
+- Reactで開発する場合、webpackのようなバンドラーを用いるのが普通
+  - webpackの設定ファイルを記述するには、一定の知識が必要
+  - 特に、チャンク分割やCSSモジュールの設定は複雑だったりと、設定ファイルのメンテナンスが大変
+- Next.jsは、webpackの設定があらかじめなされた状態で開発が始められる
+  - Next.jsはルーティング時のプリフェッチや画像の最適化などのパフォーマンス最適化をフレームワーク内で内包
+  - ゼロコンフィグで簡単にパフォーマンスの高いアプリケーションを構築可能
+  - ページ単位のサーバーサイドレンダリング(SSR)や静的サイト生成(SSG)の機能も提供
+- Next.jsはVercel社が開発
+  - 同社はVercelというホスティングサービスを提供
+  - Next.jsで構築したアプリケーションは簡単に公開可能
+
+### ページコンポーネントディレクトリを作る
+- Next.jsでは、pagesディレクトリ配下のディレクトリ構造がページのルーティングに対応
+  - たとえば、`pages/users.tsx`とファイルを作成すると、`/users`へアクセスしたとき、それが実行
+  - `pages/index.tsx`の場合は、`/` へアクセスしたときに実行されます。
+- このpagesディレクトリに置かれたコンポーネントのことを、Next.jsの用語でページコンポーネント(page component)と呼ぶ
+- Next.jsでは、1ファイルにつき1ページコンポーネントを作成
+  - Next.jsはpagesディレクトリの各tsxファイルを読み込み、デフォルトエクスポートされた関数をページコンポーネントとして認識
+```
+import { NextPage } from "next";
+
+const IndexPage: NextPage = () => {
+  return <div>猫画像予定地</div>;
+};
+export default IndexPage;
+```
+
+### Next.jsではアロー関数を使うべきですか？
+- JavaScriptで関数を作るには、大きく分けてアロー関数と関数宣言を使った方法の2種類がある
+- 上で書いたIndexPage関数はアロー関数
+- これを関数宣言に書き換えると次のようになる
+```
+import { ReactElement } from "react";
+
+export default function IndexPage(): ReactElement<any, any> | null {
+  return <div>猫画像予定地</div>;
+}
+```
+Next.jsでは、アロー関数と関数宣言のどちらで書いても構いません。このチュートリアルでアロー関数を採用しているのは、ページコンポーネントにNextPage型の型注釈をつけるのが、アロー関数のほうがやりやすいためです。
+
+### 画像を取得する関数を実装する
+```
+const fetchImage = async () => {
+  const res = await fetch("https://api.thecatapi.com/v1/images/search");
+  const images = await res.json();
+  console.log(images);
+  return images[0];
+};
+```
+- fetchはHTTPリクエストでリソースを取得するブラウザ標準のAPI
+  - 戻り値としてResponseオブジェクトを返す
+- Responseオブジェクトのjson()メソッドを実行することで、レスポンスのボディーをJSONとしてパースし、JavaScriptのオブジェクトとして取得可能
+- fetchImage関数についているasyncキーワードは、この関数が非同期処理を行うことを示す
+  - fetchとres.jsonは非同期関数で、これらの処理を待つために、それぞれにawaitキーワードがつく
+
+### useEffectには非同期関数は渡せない
+- `useEffect`に渡している関数は非同期処理をしているのに、asyncキーワードを使わずにthenを使っている
+- 次のように非同期関数を渡す書き方にして、コードが読みやすくしてみると、、、
+```
+useEffect(async () => {
+  const newImage = await fetchImage();
+  setImageUrl(newImage.url);
+  setLoading(false);
+}, []);
+```
+- useEffectには非同期関数を直接渡すことができず、コンパイルエラー
+
+### JSXには文が書けない
+```
+ return <div>{loading || <img src={imageUrl} />}</div>;
+```
+- 上の条件分岐を見て「なぜ素直にif文を使わないのか？」と疑問に思う
+- JSXの`{}`で囲った部分には、JavaScriptの式だけが書ける
+  - ifは文であるため使うことができない
+- したがって、JSXの式で条件分岐するには論理演算子や三項演算子を使う必要がある
+```
+<div>
+  {loaded && <img src="..." />} ── 論理積演算子
+  {loading || <img src="..." />} ── 論理和演算子
+  {loading ? "読み込み中" : <img src="..." />} ── 三項演算子
+</div>;
+```
+### Next.jsのSSRとデータフェッチAPI
+- Next.jsはサーバーサイドレンダリング(server-side rendering; SSR)をサポート
+  - 初回読み込みの速度を向上
+  - SEOやパフォーマンスにもよい影響を与える
+- SSRはウェブアプリケーションのレンダリングをサーバーサイドで行う技術
+  - 通常、クライアントサイドレンダリング(CSR)では、ブラウザがHTML、CSS、JavaScriptファイルをダウンロードして、JavaScriptを使用してページをレンダリング
+  - これに対して、SSRではサーバーがHTMLを生成し、ブラウザに送信
+- Next.jsでSSRを行うには、次のデータフェッチAPIの関数を利用
+  - `getServerSideProps`
+  - `getStaticProps`
+  - `getInitialProps`
+
+### getServerSideProps
+- `getServerSideProps`は、ページがリクエストされるたびにサーバーサイドで実行
+  - ページのプロパティを返す関数
+- この関数を使用すると、リクエストごとにページのデータを取得
+- クライアントサイドでルーティングが発生した場合も、この関数がサーバーサイドで実行
+- サーバーサイドでのみ実行されるため、getServerSideProps内でのみ利用しているモジュールや関数は、クライアントのコードにバンドルされない
+  - 配信するファイルサイズを削減することにも繋がる
+- サーバーサイドで実行されるため、データベースなどウェブに公開していないミドルウェアから直接データを取得するような処理も記述可能
+
+### getStaticProps
+- `getStaticProps`は、静的生成するページのデータを取得するための関数
+- ビルド時に実行
+- この関数を使用すると、ビルド時にページのデータを取得しておき、クライアントからのリクエスト時にはそのキャッシュからデータを返す
+- この関数は、リクエスト時や描画時にはデータ取得が実行されないことに注意
+  - ユーザーログインが不要なランディングページや、内容のリアルタイムさが不要なブログなどの静的なページを構築するときに利用
+
+### getInitialProps
+- `getInitialProps`は、SSR時にサーバーサイドでデータ取得の処理が実行
+- また、クライアントサイドでルーティングが発生した場合は、クライアント側でもデータの取得が実行
+- このAPIはサーバーとクライアントの両方で実行されるため、両方の環境で動作するように実装する必要がある
+
+※`getInitialProps`は、Next.js 9までのバージョンで使われていた古い方法です。現在でもサポートされていますが、Next.js 10以降では、代わりに`getServerSideProps`や`getStaticProps`の使用を推奨しています。
+
+### ビジュアルを作り込む
+- `index.modules.css`をインポート
+- `.modules.css`で終わるファイルはCSSモジュール(CSS Modules)と呼ぶ
+  - CSSファイル内で定義したクラス名をTypeScriptからオブジェクトとして参照可能
+
+### プロダクションビルドと実行
+- Next.jsでは`next build`を実行することで最適化されたプロダクション用のコードを生成可能
+- `next start`で生成されたプロダクションコードを実行
+  - ボイラテンプレートでは`package.json`にbuildコマンドとstartコマンドがすでにある
+  - `yarn build`と`yarn start`を実行して本番用のアプリケーションを実行する
+```
+yarn build && yarn start
+```
