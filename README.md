@@ -45,6 +45,14 @@
     - [getInitialProps](#getinitialprops)
     - [ビジュアルを作り込む](#ビジュアルを作り込む)
     - [プロダクションビルドと実行](#プロダクションビルドと実行)
+  - [Vercelにデプロイしてみよう](#vercelにデプロイしてみよう)
+    - [Vercelとは？](#vercelとは)
+  - [Jestでテストを書こう](#jestでテストを書こう)
+    - [Jestとは](#jestとは)
+    - [TypeScriptのインストール](#typescriptのインストール)
+    - [Jestをインストールする](#jestをインストールする)
+    - [Jestが動くかを確認する](#jestが動くかを確認する)
+    - [テストコードを書く](#テストコードを書く)
 # 【１章】TypeScript のあらまし
 ## TS の特徴
 - TypeScriptで書かれたコードは純粋なJavaScriptにコンパイルされる
@@ -420,3 +428,55 @@ useEffect(async () => {
 ```
 yarn build && yarn start
 ```
+
+## Vercelにデプロイしてみよう
+### Vercelとは？
+- Next.jsを開発しているVercel社が提供しているフロントエンド向けのクラウドプラットフォーム
+- 特別な設定をせずにゼロコンフィグでGitHubリポジトリと連携をするだけで簡単にデプロイ環境を構築
+- プルリク単位で自動でプレビュー環境を利用
+- JavaScriptやCSSファイルを自動で圧縮してCDN環境で配信
+
+## Jestでテストを書こう
+### Jestとは
+- JestはJavaScriptのテストフレームワーク
+  - TypeScriptでテストを書くことも可能
+- Jestは、フロントエンドライブラリのReactやVueなどのテストだけでなく、Node.js向けのパッケージのテストも行える
+- 要するに、JavaScriptやTypeScriptで書かれたコードであれば、そのほとんどはJestでテストが行える
+
+### TypeScriptのインストール
+- プロジェクトにTypeScriptをインストール
+```
+yarn add -D typescript
+```
+- 次に、tsconfig.jsonを生成
+```
+yarn tsc --init
+```
+
+### Jestをインストールする
+- jest
+  - jestはJest本体
+  - JavaScriptだけのプロジェクトであれば、このパッケージを入れるだけでテストが始められる
+  - ts-jestを入れると、TypeScriptで書いたテストコードを、コンパイルの手間なしにそのまま実行可能
+- ts-jest
+  - ts-jestは、JestをTypeScriptに対応させるためのもの
+- @types/jest
+  - @types/jestはJestのAPIの型定義ファイル
+  - TypeScriptの型情報を付与されるので、テストコードの型チェックが行える
+
+### Jestが動くかを確認する
+- Jestで実行できるテストファイルには命名規則がある
+- ファイル名が`.test.ts`または`.spec.ts`で終わるもの
+
+### テストコードを書く
+```
+test("0を渡したらtrueになること", () => {
+  const result = isZero(0);
+  expect(result).toBe(true);
+});
+```
+- Jestでは`expect`関数とマッチャーを使い、結果が期待する値になっているかを記述
+  - マッチャーは、`expect`関数の戻り値に生えているメソッド
+  - 上の例では、`toBe`がマッチャー
+  - このメソッドの引数には期待値を書く
+  - 上のテストケースでは、`true`が期待値なので、`toBe(true)`と記述
