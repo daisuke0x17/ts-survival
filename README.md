@@ -62,6 +62,14 @@
     - [設定ファイルを作成する](#設定ファイルを作成する)
     - [どのような整形ルールがよいのか？](#どのような整形ルールがよいのか)
     - [Prettierの自動整形を無効にする](#prettierの自動整形を無効にする)
+  - [ESLintでTypeScriptのコーディング規約チェックを自動化しよう](#eslintでtypescriptのコーディング規約チェックを自動化しよう)
+    - [TypeScriptの書き方はさまざま](#typescriptの書き方はさまざま)
+    - [コーディング規約で書き方を統一](#コーディング規約で書き方を統一)
+    - [コーディング規約の自動化](#コーディング規約の自動化)
+    - [リンターとは](#リンターとは)
+    - [コンパイラとリンターの違い](#コンパイラとリンターの違い)
+    - [ESLintを導入する](#eslintを導入する)
+    - [ESLintの設定ファイルを作る](#eslintの設定ファイルを作る)
 # 【１章】TypeScript のあらまし
 ## TS の特徴
 - TypeScriptで書かれたコードは純粋なJavaScriptにコンパイルされる
@@ -563,3 +571,74 @@ const board2 = [
   0, 1
 ];
 ```
+
+## ESLintでTypeScriptのコーディング規約チェックを自動化しよう
+### TypeScriptの書き方はさまざま
+- TypeScriptでは文末のセミコロンが省略可能
+- 以下のコードは文法的にどちらも正しい
+```
+console.log("OK")
+console.log("OK");
+```
+
+### コーディング規約で書き方を統一
+- 理想は、誰が書いても同じコードになること
+- 解決策のひとつは、書き方のルールを決めること
+- コードの書き方の取り決めは「コーディング規約(coding standards)」と呼ばれる
+- 実用的な規約に仕上げるにはかなりの労力を要する
+  - 公開されている規約を利用
+1. [Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html)
+2. [JavaScript Standard Style](https://standardjs.com/rules.html)
+3. [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript)
+
+### コーディング規約の自動化
+- ESLintは、JavaScriptやTypeScriptのコードがコーディング規約に準拠しているかをチェックするツール
+- コードによっては、ESLintが規約に準じたコードに直せる場合もある
+- 機械に指摘されたほうが気が楽
+
+### リンターとは
+- ESLintは一般的に「リンター(linter)」というジャンルのツール
+- リンターは、プログラムを静的に解析し、バグや問題点を発見するツール
+- リント(lint)の由来は紡績
+  - 繊維をつむぐ際に不要になるホコリのような糸くずをリントと呼ぶ
+  - 紡績ではリントを取り除く工程があり、これにちなんでプログラミングでもリントという名前が使われだした
+
+### コンパイラとリンターの違い
+- コンパイラの本質は、ある言語から別の言語に変換
+- リンターの本質は、プログラムの問題点を指摘すること
+  - 言語から言語への変換は行わない
+- ESLintが得意なこと
+  - インデントや命名規則などのコーディングスタイル
+  - どのようなコードを書くべきか避けるべきかの意思決定
+  - セキュリティやパフォーマンスに関する分野でのチェック
+- コンパイラは型チェックが得意
+
+### ESLintを導入する
+- ESLintはYarnでインストール
+- Next.jsは最初からESLintが導入されている
+- 実務でNext.jsプロジェクトでESLintを使う場合は、導入ステップは省略可能
+```
+yarn add -D 'eslint@^8'
+```
+
+### ESLintの設定ファイルを作る
+- root
+  - eslintコマンドを実行したディレクトリを起点に、ディレクトリをさかのぼって設定ファイル(`.eslintrc.js`)を探す仕様
+  - これが `true` である設定ファイルが見つかると、これ以上ディレクトリをさかのぼらない
+- env
+  - チェック対象のJavaScript/TypeScriptコードがどの実行環境で使われるかをESLintに伝えるためのオプション
+  - これを設定すると、ESLintがグローバル変数を認識する
+  - たとえば、browser: trueを設定すると、windowやalertなどのグローバル変数が認識される
+- parserOptions
+  - parserOptionsはチェック対象のJavaScriptがどの構文を使っているかをESLintに伝えるためのオプション
+  - ecmaVersion
+    - ecmaVersionは、どのバージョンのECMAScriptの構文を使うかを指定
+    - "latest"を設定すると、最新のECMAScriptの構文を使うという指定になる
+    - デフォルトではECMAScript 5
+    - 実務ではES5で開発することはまれなので、ここは**必ず指定**する
+  - sourceType
+    - JavaScriptにはスクリプトモードとモジュールモードがある
+    - sourceTypeはJavaScriptコードがどちらのモードで書かれるかを指定するオプション
+    - モジュールモードでは、import文やexport文といった追加の構文がサポートされる
+    - sourceTypeのデフォルト値は"script"(スクリプトモード)
+    - 実務で開発する場合は、モジュールモードでJavaScript/TypeScriptを書くほうが普通なので、sourceTypeには"module"(モジュールモード)を指定する
