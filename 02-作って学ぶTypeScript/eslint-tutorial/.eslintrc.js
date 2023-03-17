@@ -8,4 +8,9 @@ module.exports = {
         ecmaVersion: "latest",
         sourceType: "module",
     },
-};
+    extends: ["airbnb-base"],
+    rules: {
+        "import/prefer-default-export": "off",
+        "quotes": ["error", "double"],
+    },
+}

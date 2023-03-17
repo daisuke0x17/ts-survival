@@ -70,6 +70,16 @@
     - [コンパイラとリンターの違い](#コンパイラとリンターの違い)
     - [ESLintを導入する](#eslintを導入する)
     - [ESLintの設定ファイルを作る](#eslintの設定ファイルを作る)
+    - [ESLintのルールを設定する](#eslintのルールを設定する)
+    - [コードを自動修正する](#コードを自動修正する)
+    - [Shareable configを導入する](#shareable-configを導入する)
+    - [ルールを部分的に無効化する](#ルールを部分的に無効化する)
+    - [ESLintでTypeScriptをリントしよう](#eslintでtypescriptをリントしよう)
+    - [TypeScriptを導入する](#typescriptを導入する)
+    - [TypeScript ESLintを導入する](#typescript-eslintを導入する)
+    - [TypeScript ESLintにはどんなルールがある？](#typescript-eslintにはどんなルールがある)
+    - [TypeScript向けのshareable configを導入する](#typescript向けのshareable-configを導入する)
+    - [TypeScript ESLintの設定ファイルを作る](#typescript-eslintの設定ファイルを作る)
 # 【１章】TypeScript のあらまし
 ## TS の特徴
 - TypeScriptで書かれたコードは純粋なJavaScriptにコンパイルされる
@@ -623,22 +633,151 @@ yarn add -D 'eslint@^8'
 
 ### ESLintの設定ファイルを作る
 - root
-  - eslintコマンドを実行したディレクトリを起点に、ディレクトリをさかのぼって設定ファイル(`.eslintrc.js`)を探す仕様
-  - これが `true` である設定ファイルが見つかると、これ以上ディレクトリをさかのぼらない
+  - eslintコマンドを実行したディレクトリを起点に、ディレクトリをさかのぼって設定ファイル(`.eslintrc.js`)を探す仕様がある
+  - root が `true` である設定ファイルが見つかると、これ以上ディレクトリをさかのぼらない
+  - 複数の`.eslintrc.js`が見つかると設定がマージされる（注意が必要そう）
 - env
   - チェック対象のJavaScript/TypeScriptコードがどの実行環境で使われるかをESLintに伝えるためのオプション
   - これを設定すると、ESLintがグローバル変数を認識する
   - たとえば、browser: trueを設定すると、windowやalertなどのグローバル変数が認識される
+  - es2021を設定すると、ES2021までに導入されたグローバル変数が認識される
+  - 他にもnodeなどの指定ができる
+    - 指定できる実行環境の一覧は[公式ドキュメント](https://eslint.org/docs/latest/use/configure/language-options#specifying-environments)を参照
 - parserOptions
   - parserOptionsはチェック対象のJavaScriptがどの構文を使っているかをESLintに伝えるためのオプション
-  - ecmaVersion
-    - ecmaVersionは、どのバージョンのECMAScriptの構文を使うかを指定
-    - "latest"を設定すると、最新のECMAScriptの構文を使うという指定になる
-    - デフォルトではECMAScript 5
+  - `ecmaVersion`
+    - `ecmaVersion`は、どのバージョンのECMAScriptの構文を使うかを指定
+    - `"latest"`を設定すると、最新のECMAScriptの構文を使うという指定
+    - デフォルトでは`ECMAScript 5`
     - 実務ではES5で開発することはまれなので、ここは**必ず指定**する
-  - sourceType
+    - envオプションで`es2022`などECMAScriptのバージョンを指定した場合、`ecmaVersion`にも自動的に`es2022`が設定
+      - どちらも同じバージョンを指定する場合は、`ecmaVersion`の指定は省略可能
+  - `sourceType`
     - JavaScriptにはスクリプトモードとモジュールモードがある
     - sourceTypeはJavaScriptコードがどちらのモードで書かれるかを指定するオプション
-    - モジュールモードでは、import文やexport文といった追加の構文がサポートされる
+    - モジュールモードでは、import文やexport文といった追加の構文がサポート
     - sourceTypeのデフォルト値は"script"(スクリプトモード)
-    - 実務で開発する場合は、モジュールモードでJavaScript/TypeScriptを書くほうが普通なので、sourceTypeには"module"(モジュールモード)を指定する
+    - 実務で開発する場合は、モジュールモードでJavaScript/TypeScriptを書くほうが普通なので、sourceTypeには"module"(モジュールモード)を指定
+
+### ESLintのルールを設定する
+- SLintには「ルール(rule)」という概念がある
+  - ルールはチェックの最小単位
+- たとえば
+  - `no-console`: console.logを書いてはならない
+  - `camelcase`: 変数名はキャメルケースにすること
+  - `semi`: 文末セミコロンは省略しない
+- 全ルールは[公式ドキュメント](https://eslint.org/docs/latest/rules/)を参照
+- ルールには、重大度(severity)という重み付けが設定可能
+  - offはルールを無効化し、チェックを行わなくする設定
+  - warnは発見した問題を警告として報告します。報告はするものの、eslintコマンドの終了コードには影響しない
+  - errorは発見した問題をエラーとして報告し、終了コードを1にする
+  - それぞれの重大度は、0から2までの数値で設定可能
+
+|重大度|数値|効果|
+|----|----|----|
+|off|0|ルールをオフにする|
+|warn|1|警告するが終了コードに影響しない|
+|error|2|警告し、終了コードを1にする|
+
+### コードを自動修正する
+- ESLintのルールの中には、コードの自動修正ができるものがある
+- たとえば、`semi`は、文末セミコロンをつけるつけないを定めるルール
+- ESLintでコードを自動修正するには、eslintコマンドに`--fix`オプションをつける
+```
+npx eslint src --fix
+```
+
+### Shareable configを導入する
+- ESLintのルールは数があまりにも多いため、ルールをひとつひとつ調べて導入していくのは大変
+  - そこで、お勧めがshareable configの活用
+- shareable configは、誰かが設定したルールのプリセット
+- 有名なshareable configのひとつに、ESLint公式が公開している`eslint:recommended`
+  - これを導入すると、Rulesの一覧でチェックマークがついているルールが一括して有効化
+  - 有効になっているルールが少ないため、実務では物足りなさがあるかも
+- 第三者が公開しているshareable configもあり、次にあげるものは実務でも広く使われている
+
+|名前|作成|準拠するコーディング規約|
+|----|----|----|
+|eslint-config-airbnb|Airbnb|Airbnb JavaScript Style Guide、Airbnb React/JSX Style Guide|
+|eslint-config-airbnb-base|Airbnb	Airbnb JavaScript Style Guide|
+|eslint-config-standard|Standard JS	JavaScript Standard Style|
+|eslint-config-google|Google|Google JavaScript Style Guide|
+- 上のshareable configはコーディング規約に基づいて作成されているため、文書としてのコーディング規約とESLintの設定をセットでプロジェクトに導入できる利点がある
+- Airbnbの設定には、eslint-config-airbnbとeslint-config-airbnb-baseの2つがある
+  - 前者は、React向けの設定が追加で盛り込まれている
+```
+yarn add -D \
+  'eslint-config-airbnb-base@^15' \
+  'eslint-plugin-import@^2'
+```
+
+### ルールを部分的に無効化する
+- .eslintrc.jsで設定した規約はプロジェクト全体に及ぶ
+- コードのいち部分について、ルールを無効化することも可能
+- 部分的にルールを無効にするには、その行の前にコメント`eslint-disable-next-line`を追加
+```
+// eslint-disable-next-line camelcase
+export const hello_world = "Hello World";
+```
+
+### ESLintでTypeScriptをリントしよう
+- そもそもESLintでは、TypeScriptはチェックできない
+- これを補うのがTypeScript ESLint
+
+### TypeScriptを導入する
+- TypeScript ESLintを使うには、TypeScript環境を構築しておく必要がある
+- typescriptの導入
+- 合わせてNode.jsの型定義@types/nodeもインストール
+  - この型情報は、`.eslintrc.js`などのNode.js環境で実行されるファイルをESLintでチェックするときに利用される
+```
+yarn add -D 'typescript@^4.6' '@types/node@^16'
+```
+- TypeScriptコンパイラの設定ファイルも作成
+  - `tsconfig.json`
+
+### TypeScript ESLintを導入する
+- ESLint本体とTypeScript ESLintの両方をインストール
+```
+yarn add -D \
+  'eslint@^8' \
+  '@typescript-eslint/parser@^5' \
+  '@typescript-eslint/eslint-plugin@^5'
+```
+- TypeScript ESLintは2つのパッケージから成る
+  - `@typescript-eslint/parser`は、ESLintにTypeScriptの構文を理解させるためのパッケージ
+  - `@typescript-eslint/eslint-plugin`は、TypeScript向けのルールを追加するパッケージ
+
+### TypeScript ESLintにはどんなルールがある？
+- ESLintの200以上のルールに加えて、TypeScript ESLintを導入すると、100以上のルールが追加
+- 追加されるルールの一覧は、[TypeScript ESLintのドキュメント](https://typescript-eslint.io/rules/)で確認
+
+### TypeScript向けのshareable configを導入する
+- コーディング規約Airbnb JavaScript Style Guideに準拠したshareable configをインストール
+```
+yarn add -D \
+  'eslint-config-airbnb-base@^15' \
+  'eslint-plugin-import@^2' \
+  'eslint-config-airbnb-typescript@^17'
+```
+- `eslint-config-airbnb-base`はJavaScript向けのshareable config
+- これを上書きして、TypeScript ESLintのルールを追加したり、TypeScriptコンパイラがチェックするためESLintでチェックする必要がないルールを除外する設定を加えるのが`eslint-config-airbnb-typescript`
+- `eslint-plugin-import`は依存関係上、導入が必要なパッケージ
+
+### TypeScript ESLintの設定ファイルを作る
+- TypeScript ESLintを動かすためには、次の2つの設定ファイルを作る必要がある
+  - `tsconfig.eslint.json`
+    - TypeScript ESLintは、チェック時に型情報を利用するために、TypeScriptコンパイラを使う
+    - その際のコンパイラ設定をtsconfig.eslint.jsonに書く
+    - コンパイラ設定は、tsconfig.jsonの内容をextendsで継承しつつ、上書きが必要なところだけ記述
+  - `.eslintrc.js`
+    -  `parser`
+       -  parserで設定したパーサーを使って、ESLintはJavaScriptやTypeScriptの構文を解析
+       -  TypeScriptパーサーの指定がないと、ESLintはTypeScriptを解釈できず、エラーが発生
+       -  TypeScriptはJavaScriptの構文を拡張した言語
+       -  なので、このパーサーさえ入れておけば、TypeScriptに限らずJavaScriptのこのパーサーひとつで対応できる
+       -  要するに、このパーサーひとつで、TypeScriptとJavaScriptのファイルどちらもリントできるようになる
+    - `parserOptions`
+      - `project`と`tsconfigRootDir`はTypeScript ESLint独自のオプション
+      - tsconfigRootDirはプロジェクトルートの絶対パスを指定
+      - projectは、ESLint実行時に使うコンパイラ設定ファイルをtsconfigRootDirからの相対パスで指定
+      - これらの設定は、TypeScript ESLintが型情報を参照するために必要な設定
